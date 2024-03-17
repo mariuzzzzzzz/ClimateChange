@@ -1,121 +1,83 @@
 # new terminal
 # cd model
-# python model.py -u 'MONGO_DB_CONNECTION_STRING'
+# python model.py -u 'mongodb+srv://xxx:xxx@mdmmongo.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000'
 
 import argparse
-
-import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sn
 from pymongo import MongoClient
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.pipeline import make_pipeline
+import numpy as np
 
-parser = argparse.ArgumentParser(description='Create Model')
+# Parse the command-line arguments
+parser = argparse.ArgumentParser(description='Analyze Temperature Data')
 parser.add_argument('-u', '--uri', required=True, help="mongodb uri with username/password")
 args = parser.parse_args()
 
+# MongoDB setup
 mongo_uri = args.uri
-mongo_db = "tracks"
-mongo_collection = "tracks"
+mongo_db = "mdmtemp"
+mongo_collection = "mdmtemp"
 
 client = MongoClient(mongo_uri)
 db = client[mongo_db]
 collection = db[mongo_collection]
 
-# fetch a single document
-track = collection.find_one(projection={"gpx": 0, "url": 0, "bounds": 0, "name": 0})
-values = [track.values() for track in collection.find(projection={"gpx": 0, "url": 0, "bounds": 0, "name": 0})]
+# Fetch all documents
+documents = list(collection.find(projection={"_id": 0}))
 
-# we later use track document's field names to label the columns of the dataframe
-df = pd.DataFrame(columns=track.keys(), data=values).set_index("_id")
+# Load data into a DataFrame
+df = pd.DataFrame(documents)
+df['year'] = pd.to_numeric(df['year'])
+df['no_smoothing'] = pd.to_numeric(df['no_smoothing'])
+df['lowess_5'] = pd.to_numeric(df['lowess_5'])
 
-df['avg_speed'] = df['length_3d']/df['moving_time']
-df['difficulty_num'] = df['difficulty'].map(lambda x: int(x[1])).astype('int32')
+# Basic Analysis
+plt.figure(figsize=(10, 6))
+plt.plot(df['year'], df['no_smoothing'], label='No Smoothing')
+plt.plot(df['year'], df['lowess_5'], label='Lowess(5)')
+plt.xlabel('Year')
+plt.ylabel('Temperature Anomaly (°C)')
+plt.title('Global Mean Temperature Anomalies')
+plt.legend()
+plt.show()
 
-# drop na values
-df.dropna()
-df = df[df['avg_speed'] < 2] # an avg of > 2m/s is probably not a hiking activity
-df = df[df['min_elevation'] > 0]
-df = df[df['length_2d'] < 100000]
+# Define input and output
+X = df[['year']]
+y = df['no_smoothing']
 
-corr = df.corr(numeric_only=True)
+# Linear Regression
+linear_model = LinearRegression()
+linear_model.fit(X, y)
 
-print(corr)
-sn.heatmap(corr, annot=True)
-# plt.show()
+# Polynomial Regression
+degree = 3
+poly_model = make_pipeline(PolynomialFeatures(degree), LinearRegression())
+poly_model.fit(X, y)
 
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import Normalizer
+# Random Forest
+rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
+rf_model.fit(X, y)
 
-y = df.reset_index()['moving_time']
-x = df.reset_index()[['downhill', 'uphill', 'length_3d', 'max_elevation']]
+# Predictions for 2030, 2040, 2050
+future_years = np.array([[2030], [2040], [2050]])
 
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.20, random_state=42)
+# Linear Model Predictions
+linear_preds = linear_model.predict(future_years)
 
-# Baseline Linear Regression
-lr = LinearRegression()
-lr.fit(x_train, y_train)
+# Polynomial Model Predictions
+poly_preds = poly_model.predict(future_years)
 
-y_pred_lr = lr.predict(x_test)
-r2 = r2_score(y_test, y_pred_lr)
-mse = mean_squared_error(y_test, y_pred_lr)
+# Random Forest Predictions
+rf_preds = rf_model.predict(future_years)
 
-# Mean Squared Error / R2
-print("r2:\t{}\nMSE: \t{}".format(r2, mse))
-
-# GradientBoostingRegressor
-from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.model_selection import train_test_split
-
-gbr = GradientBoostingRegressor(n_estimators=50, random_state=9000)
-gbr.fit(x_train, y_train)
-y_pred_gbr = gbr.predict(x_test)
-r2 = r2_score(y_test, y_pred_gbr)
-mse = mean_squared_error(y_test, y_pred_gbr)
-
-print("r2:\t{}\nMSE: \t{}".format(r2, mse))
-
-def din33466(uphill, downhill, distance):
-    km = distance / 1000.0
-    print(km)
-    vertical = downhill / 500.0 + uphill / 300.0
-    print(vertical)
-    horizontal = km / 4.0
-    print(horizontal)
-    return 3600.0 * (min(vertical, horizontal) / 2 + max(vertical, horizontal))
-
-def sac(uphill, distance):
-    km = distance / 1000.0
-    return 3600.0 * (uphill/400.0 + km /4.0)
-
-print("*** DEMO ***")
-downhill = 300
-uphill = 700
-length = 10000
-max_elevation = 1200
-print("Downhill: " + str(downhill))
-print("Uphill: " + str(uphill))
-print("Length: " + str(length))
-demoinput = [[downhill,uphill,length,max_elevation]]
-demodf = pd.DataFrame(columns=['downhill', 'uphill', 'length_3d', 'max_elevation'], data=demoinput)
-demooutput = gbr.predict(demodf)
-time = demooutput[0]
-
-import datetime
-
-print("DIN: " + str(datetime.timedelta(seconds=din33466(uphill, downhill, length))))
-print("SAC: " + str(datetime.timedelta(seconds=sac(uphill, length))))
-print("Our Model: " + str(datetime.timedelta(seconds=time)))
-
-
-# Save To Disk
-import pickle
-
-# save the classifier
-with open('GradientBoostingRegressor.pkl', 'wb') as fid:
-    pickle.dump(gbr, fid)    
-
-# load it again
-with open('GradientBoostingRegressor.pkl', 'rb') as fid:
-    gbr_loaded = pickle.load(fid)
+# Printing predictions
+print("Predictions for Temperature Anomaly (°C):")
+for year, linear, poly, rf in zip(future_years.flatten(), linear_preds, poly_preds, rf_preds):
+    print(f"\nYear: {year}")
+    print(f"  Linear Regression: {linear:.2f}°C")
+    print(f"  Polynomial Regression (Degree {degree}): {poly:.2f}°C")
+    print(f"  Random Forest: {rf:.2f}°C")

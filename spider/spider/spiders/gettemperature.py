@@ -1,6 +1,6 @@
-# crawl gpx spider, limit to 10 and store output in json line format file
+# crawl temperature spider
 # new terminal, cd spider
-# scrapy crawl gpx -s CLOSESPIDER_PAGECOUNT=10 -o file.jl
+# scrapy crawl temperature_data -o temperature_data.jl
 
 import scrapy
 
@@ -10,13 +10,13 @@ class TemperatureSpider(scrapy.Spider):
 
     def parse(self, response):
         lines = response.text.split('\n')
-        data_lines = lines[5:]  # This might need adjustment based on the actual number of header lines
+        data_lines = lines[5:]
 
         for line in data_lines:
-            if line.strip():  # Ensure the line is not empty
+            if line.strip():
                 parts = line.split()
                 # Extract year, no smoothing, and Lowess(5) values
-                if len(parts) >= 3:  # Ensure the line has enough parts to extract
+                if len(parts) >= 3:
                     year = parts[0]
                     no_smoothing = parts[1]
                     lowess_5 = parts[2]
