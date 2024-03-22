@@ -8,7 +8,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-
       - name: checkout repo content
         uses: actions/checkout@v3 # checkout the repository content to github runner
 
@@ -17,15 +16,15 @@ jobs:
         with:
           python-version: '3.12.1' # install the python version needed
           cache: 'pip'
-          
+
       - name: install python packages
         run: pip install -r requirements.txt
-          
+
       - name: scrape temperature data
         working-directory: ./spider
         run: scrapy crawl temperature_data -o temperature_data.jl
 
-     - name: upload data to mongodb
+      - name: upload data to mongodb
         working-directory: ./spider
         run: python ./mongo_import.py -c temperature_data -i ./temperature_data.jl -u "${{secrets.MONGODB_URI}}"
 
