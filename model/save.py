@@ -19,7 +19,7 @@ try:
     # Create the BlobServiceClient object
     blob_service_client = BlobServiceClient.from_connection_string(args.connection)
 
-    # account_url = "https://mosazhaw.blob.core.windows.net"
+    # account_url = "https://affolma.blob.core.windows.net"
     # default_credential = DefaultAzureCredential()
     # Create the BlobServiceClient object
     # blob_service_client = BlobServiceClient(account_url, credential=default_credential)
@@ -30,7 +30,7 @@ try:
     for container in containers:
         existingContainerName = container['name']
         print(existingContainerName, container['metadata'])
-        if existingContainerName.startswith("hikeplanner-model"):
+        if existingContainerName.startswith("climatechange-model"):
             parts = existingContainerName.split("-")
             print(parts)
             if (len(parts) == 3):
@@ -39,7 +39,7 @@ try:
                     suffix = newSuffix
 
     suffix += 1
-    container_name = str("hikeplanner-model-" + str(suffix))
+    container_name = str("climatechange-model-" + str(suffix))
     print("new container name: ")
     print(container_name)
 
@@ -53,16 +53,19 @@ try:
         # Create the container
         container_client = blob_service_client.create_container(container_name)
 
-    local_file_name = "GradientBoostingRegressor.pkl"
-    upload_file_path = os.path.join(".", local_file_name)
+    # List of model files to upload
+    model_files = ["linear_regression_model.pkl", "polynomial_regression_model.pkl", "random_forest_model.pkl"]
 
-    # Create a blob client using the local file name as the name for the blob
-    blob_client = blob_service_client.get_blob_client(container=container_name, blob=local_file_name)
-    print("\nUploading to Azure Storage as blob:\n\t" + local_file_name)
+    for model_file in model_files:
+        local_file_path = os.path.join(".", model_file)
 
-    # Upload the created file
-    with open(file=upload_file_path, mode="rb") as data:
-        blob_client.upload_blob(data)
+        # Create a blob client using the local file name as the name for the blob
+        blob_client = blob_service_client.get_blob_client(container=container_name, blob=model_file)
+        print(f"\nUploading to Azure Storage as blob:\n\t{model_file}")
+
+        # Upload the created file
+        with open(file=local_file_path, mode="rb") as data:
+            blob_client.upload_blob(data, overwrite=True)
 
 except Exception as ex:
     print('Exception:')

@@ -5,86 +5,50 @@
         url = "http://localhost:5000";
     }
 
-    let count = 0;
+    let year = new Date().getFullYear(); // Default to current year for prediction
 
-    function increment() {
-        count++;
-    }
-
-    let downhill = 0;
-    let uphill = 0;
-    let length = 0;
-
-    let prediction = "n.a.";
-    let din33466 = "n.a.";
-    let sac = "n.a.";
+    let linearRegressionPrediction = "n.a.";
+    let polynomialRegressionPrediction = "n.a.";
+    let randomForestPrediction = "n.a.";
 
     async function predict() {
         let result = await fetch(
-            url +
-                "/api/predict?" +
-                new URLSearchParams({
-                    downhill: downhill,
-                    uphill: uphill,
-                    length: length,
-                }),
+            `${url}/api/predict?` + new URLSearchParams({ year: year }),
             {
                 method: "GET",
             },
         );
         let data = await result.json();
         console.log(data);
-        prediction = data.time;
-        din33466 = data.din33466;
-        sac = data.sac;
+        linearRegressionPrediction = data.linear_regression_model.toFixed(2) + "°C";
+        polynomialRegressionPrediction = data.polynomial_regression_model.toFixed(2) + "°C";
+        randomForestPrediction = data.random_forest_model.toFixed(2) + "°C";
     }
 </script>
 
-<h1>HikePlanner</h1>
-<p>
-    Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation
-</p>
-
-<button on:click={increment}>
-    Clicked {count}
-    {count === 1 ? "time" : "times"}
-</button>
+<h1>Climate Change Temperature Prediction</h1>
+<p>Enter a year to predict the temperature anomalies using three different machine learning models.</p>
 
 <p>
-    <strong>Abwärts [m]</strong>
+    <strong>Year:</strong>
     <label>
-        <input type="number" bind:value={downhill} min="0" max="10000" />
-        <input type="range" bind:value={downhill} min="0" max="10000" />
-    </label>
-</p>
-
-<p>
-    <strong>Aufwärts [m]</strong>
-    <label>
-        <input type="number" bind:value={uphill} min="0" max="10000" />
-        <input type="range" bind:value={uphill} min="0" max="10000" />
-    </label>
-</p>
-
-<p>
-    <strong>Distanz [m]</strong>
-    <label>
-        <input type="number" bind:value={length} min="0" max="30000" />
-        <input type="range" bind:value={length} min="0" max="30000" />
+        <input type="number" bind:value={year} min="1880" max="2100" />
     </label>
 </p>
 
 <button on:click={predict}>Predict</button>
 
-<p></p>
 <table>
     <tr>
-        <td>Dauer:</td><td>{prediction}</td>
+        <td>Linear Regression Prediction:</td>
+        <td>{linearRegressionPrediction}</td>
     </tr>
     <tr>
-        <td>DIN33466:</td><td>{din33466}</td>
+        <td>Polynomial Regression Prediction:</td>
+        <td>{polynomialRegressionPrediction}</td>
     </tr>
     <tr>
-        <td>SAC:</td><td>{sac}</td>
+        <td>Random Forest Prediction:</td>
+        <td>{randomForestPrediction}</td>
     </tr>
 </table>

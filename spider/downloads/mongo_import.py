@@ -1,6 +1,6 @@
 # new terminal
 # cd spider/downloads
-# python mongo_import.py -c mdmtemp -i ../temperature_data.jl -u 'mongodb+srv://xxx:xxx@mdmmongo.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000' -db mdmtemp
+# python mongo_import.py -c mdmtemp -i ../temperature_data.jl -u 'mongodb+srv://toor:Xarfer-0hivfy-fuvqox@mdmmongo.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000' -db mdmtemp
 
 import argparse
 import json

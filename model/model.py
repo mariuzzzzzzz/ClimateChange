@@ -1,6 +1,6 @@
 # new terminal
 # cd model
-# python model.py -u 'mongodb+srv://xxx:xxx@mdmmongo.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000'
+# python model.py -u 'MONGO_DB_CONNECTION_STRING'
 
 import argparse
 import pandas as pd
@@ -36,14 +36,14 @@ df['no_smoothing'] = pd.to_numeric(df['no_smoothing'])
 df['lowess_5'] = pd.to_numeric(df['lowess_5'])
 
 # Basic Analysis
-plt.figure(figsize=(10, 6))
-plt.plot(df['year'], df['no_smoothing'], label='No Smoothing')
-plt.plot(df['year'], df['lowess_5'], label='Lowess(5)')
-plt.xlabel('Year')
-plt.ylabel('Temperature Anomaly (°C)')
-plt.title('Global Mean Temperature Anomalies')
-plt.legend()
-plt.show()
+# plt.figure(figsize=(10, 6))
+# plt.plot(df['year'], df['no_smoothing'], label='No Smoothing')
+# plt.plot(df['year'], df['lowess_5'], label='Lowess(5)')
+# plt.xlabel('Year')
+# plt.ylabel('Temperature Anomaly (°C)')
+# plt.title('Global Mean Temperature Anomalies')
+# plt.legend()
+# plt.show()
 
 # Define input and output
 X = df[['year']]
@@ -81,3 +81,18 @@ for year, linear, poly, rf in zip(future_years.flatten(), linear_preds, poly_pre
     print(f"  Linear Regression: {linear:.2f}°C")
     print(f"  Polynomial Regression (Degree {degree}): {poly:.2f}°C")
     print(f"  Random Forest: {rf:.2f}°C")
+
+#import
+import pickle
+
+# Save the Linear Regression model
+with open('linear_regression_model.pkl', 'wb') as f:
+    pickle.dump(linear_model, f)
+
+# Save the Polynomial Regression model
+with open('polynomial_regression_model.pkl', 'wb') as f:
+    pickle.dump(poly_model, f)
+
+# Save the Random Forest model
+with open('random_forest_model.pkl', 'wb') as f:
+    pickle.dump(rf_model, f)
