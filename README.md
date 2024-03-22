@@ -1,7 +1,6 @@
 # HikePlanner
 
-inspired by https://blog.mimacom.com/data-collection-scrapy-hiketime-prediction/
-similar dataset https://www.kaggle.com/datasets/roccoli/gpx-hike-tracks
+inspirde by hikeplanner and changed to climate data and predicting climate change temperature
 
 ## Spider
 
