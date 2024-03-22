@@ -26,7 +26,7 @@ jobs:
 
       - name: upload data to mongodb
         working-directory: ./spider/downloads
-        run: python ./mongo_import.py -c temperature_data -i ./temperature_data.jl -u "${{secrets.MONGODB_URI}}" -db mdmtemp
+        run: python ./mongo_import.py -c temperature_data -i ../temperature_data.jl -u "${{secrets.MONGODB_URI}}" -db mdmtemp
 
       - name: build model
         working-directory: model
