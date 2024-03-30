@@ -1,44 +1,77 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" href="./favicon.png" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		
-		<link rel="modulepreload" href="./_app/immutable/entry/start.Kwg_lXfo.js">
-		<link rel="modulepreload" href="./_app/immutable/chunks/entry.awnhrGRf.js">
-		<link rel="modulepreload" href="./_app/immutable/chunks/scheduler.zMJaRgub.js">
-		<link rel="modulepreload" href="./_app/immutable/entry/app.8o7ahwMD.js">
-		<link rel="modulepreload" href="./_app/immutable/chunks/index.hLrIEu77.js">
-		<link rel="modulepreload" href="./_app/immutable/nodes/0.6Crhrizn.js">
-		<link rel="modulepreload" href="./_app/immutable/nodes/2._MmRj6YI.js">
-	</head>
-	<body data-sveltekit-preload-data="hover">
-		<div style="display: contents">  <h1 data-svelte-h="svelte-1gznw3m">Climate Change Temperature Prediction</h1> <p data-svelte-h="svelte-154a30o">Enter a year to predict the temperature anomalies using three different machine learning models.</p> <p><strong data-svelte-h="svelte-1e3v1s1">Year:</strong> <label><input type="number" min="1880" max="2100" value="2024"></label></p> <button data-svelte-h="svelte-7qel70">Predict</button> <table><tr><td data-svelte-h="svelte-4os5zv">Linear Regression Prediction:</td> <td>n.a.</td></tr> <tr><td data-svelte-h="svelte-18lcrk4">Polynomial Regression Prediction:</td> <td>n.a.</td></tr> <tr><td data-svelte-h="svelte-1okprux">Random Forest Prediction:</td> <td>n.a.</td></tr></table> 
-			
-			<script>
-				{
-					__sveltekit_cp9xys = {
-						base: new URL(".", location).pathname.slice(0, -1)
-					};
+<head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="./favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-					const element = document.currentScript.parentElement;
+    <link rel="modulepreload" href="./_app/immutable/entry/start.Kwg_lXfo.js">
+    <link rel="modulepreload" href="./_app/immutable/chunks/entry.awnhrGRf.js">
+    <link rel="modulepreload" href="./_app/immutable/chunks/scheduler.zMJaRgub.js">
+    <link rel="modulepreload" href="./_app/immutable/entry/app.8o7ahwMD.js">
+    <link rel="modulepreload" href="./_app/immutable/chunks/index.hLrIEu77.js">
+    <link rel="modulepreload" href="./_app/immutable/nodes/0.6Crhrizn.js">
+    <link rel="modulepreload" href="./_app/immutable/nodes/2._MmRj6YI.js">
 
-					const data = [null,null];
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+	<style>
+        .centered-container {
+            max-width: 10000px; /* Adjust based on your content size */
+            margin: 20px auto; /* Top & Bottom margins with automatic left & right margins for horizontal centering */
+        }
+        .form-inline {
+            justify-content: center;
+        }
+    </style>
+</head>
+<body data-sveltekit-preload-data="hover">
+    <div class="centered-container">
+        <h1 class="text-center">Climate Change Temperature Prediction</h1>
+        <p class="text-center">Enter a year to predict the temperature anomalies using three different machine learning models.</p>
+        <div class="text-center mb-3">
+            <label for="yearInput" class="form-label"><strong>Year:</strong></label>
+            <input type="number" id="yearInput" class="form-control" min="1880" max="2100" value="2024" style="width: auto; margin: 0 auto;">
+        </div>
+        <div class="text-center">
+            <button class="btn btn-primary">Predict</button>
+        </div>
+        <table class="table mt-4 mx-auto" style="width: auto;">
+            <tr>
+                <td>Linear Regression Prediction:</td>
+                <td>n.a.</td>
+            </tr>
+            <tr>
+                <td>Polynomial Regression Prediction:</td>
+                <td>n.a.</td>
+            </tr>
+            <tr>
+                <td>Random Forest Prediction:</td>
+                <td>n.a.</td>
+            </tr>
+        </table>
+    </div>
+    <script>
+        {
+            __sveltekit_cp9xys = {
+                base: new URL(".", location).pathname.slice(0, -1)
+            };
 
-					Promise.all([
-						import("./_app/immutable/entry/start.Kwg_lXfo.js"),
-						import("./_app/immutable/entry/app.8o7ahwMD.js")
-					]).then(([kit, app]) => {
-						kit.start(app, element, {
-							node_ids: [0, 2],
-							data,
-							form: null,
-							error: null
-						});
-					});
-				}
-			</script>
-		</div>
-	</body>
+            const element = document.currentScript.parentElement;
+
+            const data = [null, null];
+
+            Promise.all([
+                import("./_app/immutable/entry/start.Kwg_lXfo.js"),
+                import("./_app/immutable/entry/app.8o7ahwMD.js")
+            ]).then(([kit, app]) => {
+                kit.start(app, element, {
+                    node_ids: [0, 2],
+                    data,
+                    form: null,
+                    error: null
+                });
+            });
+        }
+    </script>
+</body>
 </html>
