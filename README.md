@@ -1,6 +1,6 @@
 # ClimateChange
 
-inspirde by hikeplanner and changed to climate data and predicting climate change temperature
+inspirde by hikeplanner and changed to climate data and predicting climate change temperature.
 
 ## Spider
 
