@@ -7,7 +7,6 @@ from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 import argparse
 
 # https://learn.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-python?tabs=managed-identity%2Croles-azure-portal%2Csign-in-azure-cli
-# Erlaubnis auf eigenes Konto geben :-)
 
 try:
     print("Azure Blob Storage Python quickstart sample")
